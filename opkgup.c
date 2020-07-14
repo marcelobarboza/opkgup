@@ -15,11 +15,20 @@
  */
 
 #include <stdio.h>
+#include <string.h>
 
 int
 main(int argc, char *argv[])
 {
+	const char 	*pkgv1 = "123";
+	const char 	*pkgv2 = "124";
+
 	printf("opkgup\n");
+
+	if (strcmp(pkgv1, pkgv2) == 0)
+		printf("%s == %s\n", pkgv1, pkgv1);
+	else
+		printf("%s != %s (precisamos olhar melhor)\n", pkgv1, pkgv2);
 
 	return (0);
 }
