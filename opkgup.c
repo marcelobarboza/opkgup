@@ -89,7 +89,14 @@ main(int argc, char *argv[])
 		char *l = strrchr(line, ' ');
 		/* pulo para o endereco */
 		l++;
-		printf("%s\n", l);
+		/* obter a versao */
+		const char *vrs = get_pkg_vs(l);
+		char *name = get_pkg_name(l);
+
+		printf("Pacote: %s\t\t\t\tVersão: %s\n", name, vrs);
+
+		free(name);
+
 	}
 
 	/* fecho o descritor */
@@ -115,8 +122,9 @@ get_pkg_name(const char *st)
 		return (NULL);
 
 	for (;; ++s) {
-		if (*s == '-' && isdigit(*(++s)) != 0)
+		if (*s == '-' && isdigit(*(s+1))) {
 			break;
+		}
 		if (!*s)
 			break;
 		c++;
