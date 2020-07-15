@@ -36,6 +36,10 @@ main(int argc, char *argv[])
 	/* estrutura de um arquivo */
 	struct	dirent	*dp = NULL;
 	int i = 0;
+	FILE *fp = NULL;
+	char *line = NULL;
+	size_t len = 0;
+	ssize_t read = 0;
 
 	printf("opkgup\n");
 
@@ -71,6 +75,28 @@ main(int argc, char *argv[])
 		*/
 	}
 
+	/* abrir o arquivo index.txt */
+	fp = fopen("./index.txt", "r");
+	if (fp == NULL) {
+		closedir(pkgdb);
+		err(1, "fopen");
+	}
+
+	while ((read = getline(&line, &len, fp)) != -1) {
+		/* removemos \n */
+		line[read-1] = '\0';
+		/* procuro pelo ultimo espaco */
+		char *l = strrchr(line, ' ');
+		/* pulo para o endereco */
+		l++;
+		printf("%s\n", l);
+	}
+
+	/* fecho o descritor */
+	fclose(fp);
+	/* limpo a linha caso ela exista */
+	if (line != NULL) free(line);
+
 	closedir(pkgdb);
 
 	return (0);
@@ -93,7 +119,7 @@ get_pkg_name(const char *st)
 			break;
 		if (!*s)
 			break;
-		++c;
+		c++;
 
 	}
 
