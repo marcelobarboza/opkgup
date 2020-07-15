@@ -22,6 +22,7 @@
 #include <err.h>
 
 static char *get_pkg_vs(const char *);
+static char *get_pkg_name(const char *);
 
 int
 main(int argc, char *argv[])
@@ -54,13 +55,20 @@ main(int argc, char *argv[])
 		/* TODO: strings vazias tb temos que ignorar */
 		if (dp->d_name[0] != '.' && strstr(dp->d_name, "firmware") == NULL) {
 			const char *pkgf= dp->d_name;
+			/* obtenhho a versão */
 			const char *vs = get_pkg_vs(pkgf);
+			/* obtenho o nome */
+			char *name = get_pkg_name(pkgf);
+			
+			printf("Pacote: %s Versão: %s\n", name, vs);
 
-			printf("Versão: %s\n", name);
+			free(name);
 			i++;
 		}
+		/*
 		if (i == 10)
 			break;
+		*/
 	}
 
 	closedir(pkgdb);
@@ -69,7 +77,33 @@ main(int argc, char *argv[])
 }
 
 static char *
-get_pkg_vers(const char *s)
+get_pkg_name(const char *st)
+{
+	char *copy;
+	int c = 0;
+	size_t siz;
+	const char *s = st;
+
+	siz = strlen(s) + 1;
+	if ((copy = malloc(siz)) == NULL)
+		return (NULL);
+
+	for (;; ++s) {
+		if (*s == '-' && isdigit(*(++s)) != 0)
+			break;
+		if (!*s)
+			break;
+		++c;
+
+	}
+
+	memcpy(copy, st, c);
+	copy[c+1] = '\0';
+	return (copy);
+}
+
+static char *
+get_pkg_vs(const char *s)
 {
 	char *save;
 
