@@ -14,10 +14,14 @@
  * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
+#include <ctype.h>
 #include <dirent.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <err.h>
+
+static char *get_pkg_vs(const char *);
 
 int
 main(int argc, char *argv[])
@@ -42,17 +46,38 @@ main(int argc, char *argv[])
 	pkgdb = opendir("/var/db/pkg");
 
 	if (pkgdb == NULL)
-		return (1);
+		err(1, "pkgdb null");
 
 	/* iteramos no diretorio */
-	while ((dp = readdir(pkgdb)) != NULL)
+	while ((dp = readdir(pkgdb)) != NULL) {
 		/* temos que ignoramos alguns pacotes */
+		/* TODO: strings vazias tb temos que ignorar */
 		if (dp->d_name[0] != '.' && strstr(dp->d_name, "firmware") == NULL) {
-			printf("Pacote: %s instalado\n", dp->d_name);
+			const char *pkgf= dp->d_name;
+			const char *vs = get_pkg_vs(pkgf);
 
+			printf("Versão: %s\n", name);
+			i++;
 		}
+		if (i == 10)
+			break;
+	}
 
 	closedir(pkgdb);
 
 	return (0);
+}
+
+static char *
+get_pkg_vers(const char *s)
+{
+	char *save;
+
+	for (save = NULL;; ++s) {
+		if (*s == '-' && isdigit(*(++s)) != 0)
+			save = (char *)s;
+		if (!*s)
+			return (save);
+
+	}
 }
